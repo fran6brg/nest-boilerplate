@@ -18,8 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ignoreExpiration: false,
 
         // expedient option of supplying a symmetric secret for signing the token. Do not expose this secret publicly.
-        secretOrKey: "secret",
-        // secretOrKey: process.env.AUTH_SECRET,
+        secretOrKey: `${process.env.AUTH_SECRET}`,
         // secretOrKey: this.configService.get<string>('auth.SECRET'); // does not work
     });
     }

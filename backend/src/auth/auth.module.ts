@@ -22,8 +22,7 @@ import { JwtStrategy } from './jwt.strategy';
         JwtModule.register({
             // By importing the same secret used when we signed the JWT,
             // we ensure that the verify phase performed by Passport, and the sign phase performed in our AuthService, use a common secret
-            secret: "secret",
-            // secret: process.env.AUTH_SECRET,
+            secret: `${process.env.AUTH_SECRET}`,
 
             // Configure the JWT to have an expiration of 600 seconds
             signOptions: { expiresIn: '600s' },
