@@ -20,11 +20,11 @@ type Query {
 }
 
 type Mutation {
-  addUser(newUserData: NewUserInput!): User!
+  addUser(newUserData: UserInput!): User!
   addProgram(newProgramData: NewProgramInput!): Program!
 }
 
-input NewUserInput {
+input UserInput {
   userId: Float!
   username: String!
   password: String!

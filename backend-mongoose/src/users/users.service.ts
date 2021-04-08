@@ -1,10 +1,9 @@
 import { Model } from 'mongoose';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
-import { CreateUserDTO } from './dto/create-user.dto';
-import { UsersArgs } from './dto/users.args';
-import { NewUserInput } from './dto/new-user.input';
+import { UserInput } from './dto/user.input';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class UsersService {
@@ -20,14 +19,13 @@ export class UsersService {
 
   /**
    *
-   * @param username
+   * @param id
    */
-  async findOne(username: string): Promise<User | undefined> {
+  async findOne(id: string): Promise<User | undefined> {
     console.log('users.service | findOne');
-    const users = await this.userModel.find().exec();
-    const user = users.find((user) => user.username === username);
-    // console.log("                >>> users.length:", users.length, "| user:", user);
-    return user;
+    return await this.userModel.findOne({
+      _id: id,
+    });
   }
 
   /**
@@ -55,13 +53,53 @@ export class UsersService {
    *
    * @param createUserDTO
    */
-  async create(createUserDTO: NewUserInput): Promise<User> {
+  async create(createUserDTO: UserInput): Promise<User> {
     try {
+      console.log('users.service | create');
       const createdUser = new this.userModel(createUserDTO);
-      await createdUser.save();
-      return createdUser;
+      const errors = await validate(createdUser);
+      console.log('users.service | errors:', errors);
+      if (errors.length > 0) {
+        throw new BadRequestException('Validation failed');
+      }
+      return await createdUser.save();
     } catch (error) {
       console.log('users.service | error:', error);
     }
+  }
+
+  /**
+   *
+   * @param updateUserDTO
+   * @param id
+   */
+  async update(updateUserDTO: UserInput, id: string): Promise<User> {
+    try {
+      console.log('users.service | findOne');
+      // update
+      const updatedUser = await this.userModel.findOneAndUpdate(
+        { _id: id },
+        { ...updateUserDTO },
+        { useFindAndModify: false },
+      );
+
+      // return
+      return updatedUser;
+    } catch (error) {
+      console.log('service | error:', error);
+    }
+  }
+
+  async delete(id: string) {
+    console.log('users.service | delete');
+    const user = await this.userModel.findOne({ _id: id });
+
+    if (user === undefined || user === null) {
+      throw new HttpException(`User doesn't exist`, HttpStatus.BAD_REQUEST);
+    }
+
+    return await this.userModel.findByIdAndRemove(id, {
+      useFindAndModify: false,
+    });
   }
 }

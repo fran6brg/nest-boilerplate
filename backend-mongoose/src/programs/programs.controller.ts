@@ -36,9 +36,9 @@ import {
   ProgramResponse,
 } from 'src/models/program.model';
 
-@ApiBearerAuth()
-@ApiUnauthorizedResponse({ description: 'Unauthorized' })
-@UseGuards(JwtAuthGuard)
+// @ApiBearerAuth()
+// @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+// @UseGuards(JwtAuthGuard)
 @Controller('programs')
 export class ProgramsController {
   constructor(private readonly programsService: ProgramsService) {}
@@ -50,10 +50,10 @@ export class ProgramsController {
     return await this.programsService.findAll();
   }
 
-  @Get('id')
-  async findOne(): Promise<Program[]> {
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<Program> {
     console.log('programs.controller | findOne');
-    return await this.programsService.findAll();
+    return await this.programsService.findOne(id);
   }
 
   @ApiCreatedResponse({ description: 'Create program' })
@@ -70,7 +70,7 @@ export class ProgramsController {
   async update(
     @Body() updateProgramDTO: UpdateProgramDTO,
     @Param('id') id: string,
-  ): Promise<ResponseObject<'program', ProgramResponse>> {
+  ) {
     console.log('programs.controller | Update');
     return await this.programsService.update(updateProgramDTO, id);
   }

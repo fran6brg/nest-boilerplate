@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/app.module';
-
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+import { AppModule } from './app/app.module';
 
 // import { WinstonModule } from 'nest-winston';
 
@@ -49,5 +50,6 @@ async function bootstrap() {
   console.log(
     `db address: ${process.env.MONGODB_URI}${process.env.MONGODB_DB_NAME}`,
   );
+  app.useGlobalPipes(new ValidationPipe());
 }
 bootstrap();

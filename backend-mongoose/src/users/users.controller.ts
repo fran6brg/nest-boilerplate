@@ -11,10 +11,8 @@ import {
   // Inject, Logger, LoggerService
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDTO } from './dto/create-user.dto';
-import { UpdateUserDTO } from './dto/update-user.dto';
+import { UserInput } from './dto/user.input';
 import { User } from './schemas/user.schema';
-import { Request, Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -27,17 +25,38 @@ export class UsersController {
     return users;
   }
 
-  @Get('id')
-  async findOne(username: string): Promise<User> {
-    const user = await this.usersService.findOne(username);
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<User> {
+    const user = await this.usersService.findOne(id);
+    console.log('users.controller | findOne | user:', user);
+    return user;
+  }
+
+  @Get(':username')
+  async findByUsername(@Param('username') username: string): Promise<User> {
+    const user = await this.usersService.findByUsername(username);
     console.log('users.controller | findOne | user:', user);
     return user;
   }
 
   @Post()
-  async create(@Body() createUserDTO: CreateUserDTO) {
+  async create(@Body() createUserDTO: UserInput) {
+    console.log('users.controller | create');
     const user = await this.usersService.create(createUserDTO);
-    console.log('users.controller | create | user:', user);
+    return user;
+  }
+
+  @Put(':id')
+  async update(@Body() updateUserDTO: UserInput, @Param('id') id: string) {
+    console.log('users.controller | update');
+    const user = await this.usersService.update(updateUserDTO, id);
+    return user;
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    console.log('users.controller | delete');
+    const user = await this.usersService.delete(id);
     return user;
   }
 }

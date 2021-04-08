@@ -16,7 +16,7 @@ import { User, UserSchema } from './schemas/user.schema';
       {
         name: User.name,
         schema: UserSchema,
-      }
+      },
     ]),
   ],
 
@@ -28,10 +28,7 @@ import { User, UserSchema } from './schemas/user.schema';
   /**
    * Providers
    */
-  providers: [
-    UsersResolver,
-    UsersService,
-  ],
+  providers: [UsersResolver, UsersService],
 
   /**
    * Exports

@@ -2,7 +2,6 @@ import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Program, ProgramDocument } from './schemas/program.schema';
-import { CreateProgramDTO } from './dto/create-program.dto';
 import { NewProgramInput } from './dto/new-program.input';
 
 @Injectable()
@@ -16,6 +15,18 @@ export class ProgramsService {
     return await this.programModel.find().exec();
   }
 
+  async findOne(id: string): Promise<Program | undefined> {
+    console.log('programs.service | findOne');
+    const program: Program = await this.programModel.findOne({ _id: id });
+    return program;
+  }
+
+  async findbyName(name: string): Promise<Program> {
+    return await this.programModel.findOne({
+      name,
+    });
+  }
+
   async create(createProgramDTO: NewProgramInput): Promise<Program> {
     try {
       const createdProgram = new this.programModel(createProgramDTO);
@@ -26,11 +37,21 @@ export class ProgramsService {
     }
   }
 
-  async update(updateProgramDTO: NewProgramInput): Promise<Program> {
+  async update(
+    updateProgramDTO: NewProgramInput,
+    id: string,
+  ): Promise<Program> {
     try {
-      const updatedProgram = new this.programModel(updateProgramDTO);
-      await updatedProgram.save();
-      return updatedProgram;
+      // update
+      const updatedUser = await this.programModel.findOneAndUpdate(
+        { _id: id },
+        {
+          ...updateProgramDTO,
+        },
+      );
+
+      // return
+      return updatedUser;
     } catch (error) {
       console.log('service | error:', error);
     }
