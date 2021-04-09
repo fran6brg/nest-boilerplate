@@ -10,40 +10,22 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-// OpenAPI
-import {
-  ApiBearerAuth,
-  ApiOkResponse,
-  ApiUnauthorizedResponse,
-  ApiCreatedResponse,
-  ApiBody,
-} from '@nestjs/swagger';
-
-// Program
+// services
 import { ProgramsService } from './programs.service';
 
-// Auth
+// dto
+import { CreateProgramDTO, UpdateProgramDTO } from './dto/program.dto';
+
+// models
+import { Program } from './models/program.model';
+
+// guards
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
-// Models
-import { ResponseObject } from 'src/models/response.model';
-import {
-  Program,
-  CreateProgramDTO,
-  CreateProgramBody,
-  UpdateProgramDTO,
-  UpdateProgramBody,
-  ProgramResponse,
-} from 'src/models/program.model';
-
-// @ApiBearerAuth()
-// @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-// @UseGuards(JwtAuthGuard)
 @Controller('programs')
 export class ProgramsController {
   constructor(private readonly programsService: ProgramsService) {}
 
-  @ApiOkResponse({ description: 'List all programs' })
   @Get()
   async Index(): Promise<Program[]> {
     console.log('programs.controller | Index');
@@ -56,27 +38,23 @@ export class ProgramsController {
     return await this.programsService.findOne(id);
   }
 
-  @ApiCreatedResponse({ description: 'Create program' })
-  @ApiBody({ type: CreateProgramBody })
   @Post()
-  async create(@Body() createProgramDTO: CreateProgramDTO) {
+  async create(@Body() createProgramDTO: CreateProgramDTO): Promise<Program> {
     console.log('programs.controller | Create');
     return await this.programsService.create(createProgramDTO);
   }
 
-  @ApiOkResponse({ description: 'Update program' })
-  @ApiBody({ type: UpdateProgramBody })
   @Put(':id')
   async update(
     @Body() updateProgramDTO: UpdateProgramDTO,
     @Param('id') id: string,
-  ) {
+  ): Promise<Program> {
     console.log('programs.controller | Update');
     return await this.programsService.update(updateProgramDTO, id);
   }
 
-  @ApiOkResponse({ description: 'Delete program' })
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   delete(@Param('id') id: string): string {
     return `Delete id: ${id}`;
   }

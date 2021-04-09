@@ -5,14 +5,20 @@ import {
   Put,
   Delete,
   Body,
-  Req,
-  Res,
   Param,
-  // Inject, Logger, LoggerService
 } from '@nestjs/common';
+
+// Services
 import { UsersService } from './users.service';
+
+// Dtos
 import { UserInput } from './dto/user.input';
+
+// Schemas
 import { User } from './schemas/user.schema';
+
+// Pipes
+import { CustomValidationPipe } from 'src/shared/pipes/custom-pipe';
 
 @Controller('users')
 export class UsersController {
@@ -26,14 +32,16 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<User> {
+  async findOne(@Param('id', CustomValidationPipe) id: string): Promise<User> {
     const user = await this.usersService.findOne(id);
     console.log('users.controller | findOne | user:', user);
     return user;
   }
 
   @Get(':username')
-  async findByUsername(@Param('username') username: string): Promise<User> {
+  async findByUsername(
+    @Param('username', CustomValidationPipe) username: string,
+  ): Promise<User> {
     const user = await this.usersService.findByUsername(username);
     console.log('users.controller | findOne | user:', user);
     return user;

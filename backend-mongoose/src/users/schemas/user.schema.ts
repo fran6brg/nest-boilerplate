@@ -4,11 +4,6 @@ import { IsString, Length, Max, Min } from 'class-validator';
 @Schema()
 export class User {
   @Prop({ required: true })
-  @Min(2)
-  @Max(3)
-  userId!: number;
-
-  @Prop({ required: true })
   @Length(2, 3)
   @IsString()
   username!: string;
@@ -16,6 +11,11 @@ export class User {
   @IsString()
   @Prop({ required: true })
   password!: string;
+
+  @Prop({ required: true })
+  @Min(2)
+  @Max(3)
+  age!: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

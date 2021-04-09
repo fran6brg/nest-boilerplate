@@ -4,10 +4,10 @@ import { IsNotEmpty, Max, MaxLength, Min, MinLength } from 'class-validator';
 @InputType()
 export class UserInput {
   @Field()
-  @Min(5, { message: 'userId is too low' })
-  @Max(10)
+  @Min(5, { message: 'damn, age is too low, must be >= 5' })
+  @Max(10, { message: 'damn, age is too low, must be <= 10' })
   @IsNotEmpty()
-  readonly userId!: number;
+  readonly age!: number;
 
   @Field()
   @MinLength(5, { message: 'username is too short' })

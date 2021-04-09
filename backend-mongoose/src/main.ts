@@ -1,9 +1,18 @@
+// Nest
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
+// Module
 import { AppModule } from './app/app.module';
+
+// Interceptors
+import { LoggingInterceptor } from './interceptors/duration.interceptor';
+import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
+
+// Session
+import * as session from 'express-session';
 
 // import { WinstonModule } from 'nest-winston';
 
@@ -18,7 +27,30 @@ async function bootstrap() {
   /**
    * Apply middlewares globally
    */
-  // app.use(new LoggerMiddleware(), new FormatDeepMiddleware()); // does not work cf. https://github.com/nestjs/nest/issues/543
+  // https://docs.nestjs.com/middleware
+  // does not work cf. https://github.com/nestjs/nest/issues/543
+  // app.use(new LoggerMiddleware());
+
+  /**
+   * Apply interceptors globally
+   */
+  app.useGlobalInterceptors(new LoggingInterceptor(), new TimeoutInterceptor());
+
+  /**
+   * Apply validation pipes globally
+   */
+  app.useGlobalPipes(new ValidationPipe());
+
+  /**
+   * HTTP sessions provide a way to store information about the user across multiple requests
+   */
+  app.use(
+    session({
+      secret: 'my-secret',
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
 
   /**
    * Open API
@@ -42,6 +74,12 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   /**
+   * Security
+   */
+  // CORS
+  app.enableCors();
+
+  /**
    * Launch app on API_PORT specified in config
    */
   await app.listen(configService.get<number>('server.API_PORT'));
@@ -50,6 +88,5 @@ async function bootstrap() {
   console.log(
     `db address: ${process.env.MONGODB_URI}${process.env.MONGODB_DB_NAME}`,
   );
-  app.useGlobalPipes(new ValidationPipe());
 }
 bootstrap();

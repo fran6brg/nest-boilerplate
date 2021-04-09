@@ -21,6 +21,7 @@ import { ProgramsModule } from '../programs/programs.module';
 import { LoggerMiddleware } from '../middlewares/logger.middleware';
 // import { FormatDeepMiddleware } from '../middlewares/formatDeep.middleware';
 import { UsersModule } from '../users/users.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   /**
@@ -38,6 +39,10 @@ import { UsersModule } from '../users/users.module';
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
       autoSchemaFile: 'schema.gql',
+    }),
+    ThrottlerModule.forRoot({
+      ttl: 10,
+      limit: 1,
     }),
     AuthModule,
     UsersModule,

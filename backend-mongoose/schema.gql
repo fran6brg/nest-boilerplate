@@ -3,7 +3,7 @@
 # ------------------------------------------------------
 
 type User {
-  userId: Float!
+  age: Float!
   username: String!
   password: String!
 }
@@ -17,15 +17,17 @@ type Program {
 type Query {
   users(skip: Int = 0, take: Int = 25): [User!]!
   programs(skip: Int = 0, take: Int = 25): [Program!]!
+  program(id: String!): Program!
 }
 
 type Mutation {
   addUser(newUserData: UserInput!): User!
   addProgram(newProgramData: NewProgramInput!): Program!
+  deleteProgram(id: String!): Boolean!
 }
 
 input UserInput {
-  userId: Float!
+  age: Float!
   username: String!
   password: String!
 }

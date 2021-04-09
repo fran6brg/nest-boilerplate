@@ -1,10 +1,18 @@
-import { NotFoundException } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'apollo-server-express';
-import { NewProgramInput } from './dto/new-program.input';
-import { ProgramsArgs } from './dto/programs.args';
-import { Program } from './models/program.model';
+
+// services
 import { ProgramsService } from './programs.service';
+
+// models
+import { Program } from './models/program.model';
+
+// inputs
+import { NewProgramInput } from './inputs/new-program.input';
+
+// args
+import { ProgramsArgs } from './inputs/args/programs.args';
+import { NotFoundException } from '@nestjs/common';
 
 const pubSub = new PubSub();
 
@@ -24,31 +32,37 @@ export class ProgramsResolver {
 
   @Query((returns) => [Program])
   async programs(@Args() programsArgs: ProgramsArgs): Promise<Program[]> {
+    console.log('programs.resolver | query | programs');
     return await this.programsService.findAll();
   }
 
-  // @Query(returns => Program)
-  // async program(@Args('id') id: string): Promise<Program> {
-  //   const program = await this.programsService.findOneById(id);
-  //   if (!program) {
-  //     throw new NotFoundException(id);
-  //   }
-  //   return program;
-  // }
+  @Query((returns) => Program)
+  async program(@Args('id') id: string): Promise<Program> {
+    console.log('programs.resolver | query | program | id:', id);
+    const program = await this.programsService.findOne(id);
+    if (!program) {
+      throw new NotFoundException(id);
+    }
+    return program;
+  }
 
   @Mutation((returns) => Program)
   async addProgram(
     @Args('newProgramData') newProgramData: NewProgramInput,
   ): Promise<Program> {
+    console.log(
+      'programs.resolver | query | addProgram | newProgramData:',
+      newProgramData,
+    );
     const program = await this.programsService.create(newProgramData);
     pubSub.publish('programAdded', { programAdded: program });
     return program;
   }
 
-  //   @Mutation(returns => Boolean)
-  //   async removeProgram(@Args('id') id: string) {
-  //     return this.programsService.remove(id);
-  //   }
+  @Mutation((returns) => Boolean)
+  async deleteProgram(@Args('id') id: string) {
+    return this.programsService.delete(id);
+  }
 
   @Subscription((returns) => Program)
   programAdded() {

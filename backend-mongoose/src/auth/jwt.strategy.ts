@@ -26,13 +26,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     /**
      * Handler to ?.
      * @param payload - ?.
-     * @returns object - object containing the userId and username properties.
+     * @returns object - object containing the age and username properties.
      */
     async validate(payload: any) {
         console.log("jwt.strategy | validate | payload:", payload);
         // business logic goes here
         // for example: database lookup in our validate() method to extract more information about the user, resulting in a more enriched user object being available in our Request
-        // this is also the place we may decide to do further token validation, such as looking up the userId in a list of revoked tokens, enabling us to perform token revocation
-        return { userId: payload.sub, username: payload.username };
+        // this is also the place we may decide to do further token validation, such as looking up the age in a list of revoked tokens, enabling us to perform token revocation
+        return { age: payload.sub, username: payload.username };
     }
 }
